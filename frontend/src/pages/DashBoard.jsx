@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 
-const API_URL = 'http://localhost:3000'
+const API_URL = 'https://epicurekiosk.onrender.com'
 
 export default function Dashboard() {
   const [machines, setMachines] = useState(mockMachines)
