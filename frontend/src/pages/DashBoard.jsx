@@ -68,7 +68,7 @@ export default function Dashboard() {
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <header className="flex justify-between items-center mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold">Epicure Kiosks Admin</h1>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
         <div className="flex items-center space-x-2">
           <Sun className="h-6 w-6" />
