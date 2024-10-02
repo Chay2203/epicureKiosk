@@ -1,16 +1,16 @@
 // mockData.js
 
 export const mockSalesData = [
-  { recipeId: 1, machineId: 1, quantitySold: 15, date: '2024-09-01' },
-  { recipeId: 2, machineId: 1, quantitySold: 25, date: '2024-09-02' },
-  { recipeId: 3, machineId: 2, quantitySold: 10, date: '2024-09-01' },
-  { recipeId: 4, machineId: 2, quantitySold: 5, date: '2024-09-03' },
-  { recipeId: 5, machineId: 2, quantitySold: 20, date: '2024-09-04' },
-  { recipeId: 1, machineId: 1, quantitySold: 30, date: '2024-09-05' },
-  { recipeId: 2, machineId: 2, quantitySold: 12, date: '2024-09-06' },
-  { recipeId: 1, machineId: 2, quantitySold: 40, date: '2024-09-07' },
-  { recipeId: 3, machineId: 1, quantitySold: 22, date: '2024-09-08' },
-  { recipeId: 2, machineId: 2, quantitySold: 18, date: '2024-09-09' },
+  { recipeId: 'Espresso', machineName: 'Coffee Machine', quantitySold: 15, date: '2024-09-01' },
+  { recipeId: 'Cappuccino	', machineName: 'Coffee Machine', quantitySold: 25, date: '2024-09-02' },
+  { recipeId: 'Lemon Tea', machineName: 'Tea Machine', quantitySold: 10, date: '2024-09-01' },
+  { recipeId: 'Lemon Tea', machineName: 'Tea Machine', quantitySold: 5, date: '2024-09-03' },
+  { recipeId: 'Green Tea', machineName: 'Tea Machine', quantitySold: 20, date: '2024-09-04' },
+  { recipeId: 'Espresso', machineName: 'Coffee Machine', quantitySold: 30, date: '2024-09-05' },
+  { recipeId: 'Cappuccino', machineName: 'Tea Machine', quantitySold: 12, date: '2024-09-06' },
+  { recipeId: 'Espresso', machineName: 'Tea Machine', quantitySold: 40, date: '2024-09-07' },
+  { recipeId: 'Lemon Tea', machineName: 'Coffee Machine', quantitySold: 22, date: '2024-09-08' },
+  { recipeId: 'Cappuccino', machineName: 'Tea Machine', quantitySold: 18, date: '2024-09-09' },
 ];
 
 export const mockMachines = [
