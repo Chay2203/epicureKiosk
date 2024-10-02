@@ -7,14 +7,14 @@ import { MachineDetails } from '../components/MachineDetails'
 import { RecipeManagement } from '../components/RecipieManagement'
 import { DispenserManagement } from '../components/DispenserManagement'
 import { mockMachines, mockRecipes, mockSalesData } from '../mockData'
-import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot } from 'lucide-react'
+import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot, CheckCircle2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const API_URL = 'https://epicurekiosk.onrender.com'
 
@@ -24,11 +24,13 @@ export default function Dashboard() {
   const [selectedMachine, setSelectedMachine] = useState(null)
   const [darkMode, setDarkMode] = useState(false)
   const [aiInsights, setAiInsights] = useState(null)
-  const [searchResults, setSearchResults] = useState([])
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [completedActions, setCompletedActions] = useState([])
 
   useEffect(() => {
     const fetchAiInsights = async () => {
+      setLoading(true)
       try {
         const response = await axios.post(`${API_URL}/ai_insights`, {
           machines: machines,
@@ -39,6 +41,8 @@ export default function Dashboard() {
       } catch (error) {
         console.error('Error fetching AI insights:', error)
         setError('Failed to fetch AI insights. Please try again later.')
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -50,6 +54,14 @@ export default function Dashboard() {
   }, [darkMode])
 
   const toggleDarkMode = () => setDarkMode(!darkMode)
+
+  const toggleActionCompletion = (index) => {
+    setCompletedActions(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index) 
+        : [...prev, index]
+    )
+  }
 
   return (
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
@@ -146,7 +158,41 @@ export default function Dashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {aiInsights ? (
+          {loading ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[1, 2, 3].map((index) => (
+                  <Card key={index}>
+                    <CardHeader>
+                      <Skeleton className="h-6 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <Separator />
+
+              <div>
+                <Skeleton className="h-6 w-1/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+
+              <div>
+                <Skeleton className="h-6 w-1/3 mb-2" />
+                <div className="space-y-2">
+                  {[1, 2, 3].map((index) => (
+                    <Skeleton key={index} className="h-8 w-full" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : aiInsights ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
@@ -202,17 +248,29 @@ export default function Dashboard() {
               {aiInsights.actionItems && aiInsights.actionItems.length > 0 && (
                 <div>
                   <h3 className="text-xl font-semibold mb-2">Recommended Actions</h3>
-                  <ul className="list-disc list-inside space-y-1">
+                  <div className="space-y-2">
                     {aiInsights.actionItems.map((item, index) => (
-                      <li key={index} className="text-sm">{item}</li>
+                      <div key={index} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`action-${index}`}
+                          checked={completedActions.includes(index)}
+                          onCheckedChange={() => toggleActionCompletion(index)}
+                        />
+                        <label
+                          htmlFor={`action-${index}`}
+                          className={`text-sm ${completedActions.includes(index) ? 'line-through text-gray-500' : ''}`}
+                        >
+                          {item}
+                        </label>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>
           ) : (
             <div className="flex items-center justify-center h-40">
-              <p className="text-lg text-gray-500">Loading AI insights...</p>
+              <p className="text-lg text-gray-500">No AI insights available. Please try again later.</p>
             </div>
           )}
         </CardContent>

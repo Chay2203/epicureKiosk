@@ -27,7 +27,8 @@ app.post('/ai_insights', async (req, res) => {
             model: 'gpt-4',
             messages: [{
                 role: 'user',
-                content: `Given the following machine data: ${JSON.stringify(machines)} and the following sales data: ${JSON.stringify(salesData)}, provide insights in the following format don't include the machineId, recipieId and id field in the answer:
+                content: `Given the following machine data: ${JSON.stringify(machines)} and the following sales data: ${JSON.stringify(salesData)}, 
+                provide insights in the following format don't include the machineId, recipieId and id field in the answer and directy give the name of the machine instead of mentioning the machineId and recipieId in the answer:
                 {
                     "salesTrend": "A brief description of sales trends",
                     "maintenanceInsight": "Maintenance recommendations",
