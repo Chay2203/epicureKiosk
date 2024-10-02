@@ -7,7 +7,7 @@ import { MachineDetails } from '../components/MachineDetails'
 import { RecipeManagement } from '../components/RecipieManagement'
 import { DispenserManagement } from '../components/DispenserManagement'
 import { mockMachines, mockRecipes, mockSalesData } from '../mockData'
-import { Sun, Moon, Coffee, Search, AlertTriangle, Brain, TrendingUp, Hammer, Package } from 'lucide-react'
+import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -23,7 +23,6 @@ export default function Dashboard() {
   const [recipes, setRecipes] = useState(mockRecipes)
   const [selectedMachine, setSelectedMachine] = useState(null)
   const [darkMode, setDarkMode] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [aiInsights, setAiInsights] = useState(null)
   const [searchResults, setSearchResults] = useState([])
   const [error, setError] = useState(null)
@@ -52,21 +51,9 @@ export default function Dashboard() {
 
   const toggleDarkMode = () => setDarkMode(!darkMode)
 
-  const handleSearch = async (query) => {
-    setSearchQuery(query)
-    try {
-      const response = await axios.post(`${API_URL}/search`, { query })
-      setSearchResults(response.data.results)
-      setError(null)
-    } catch (error) {
-      console.error('Error performing search:', error)
-      setError('Search failed. Please try again.')
-    }
-  }
-
   return (
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <header className="flex justify-between items-center mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <header className="flex justify-between items-center mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
         <div className="flex items-center space-x-4">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
@@ -84,37 +71,7 @@ export default function Dashboard() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-
-      <div className="mb-6">
-        <div className="flex space-x-2">
-          <Input
-            type="text"
-            placeholder="Search machines, recipes, or ask a question..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-grow"
-          />
-          <Button onClick={() => handleSearch(searchQuery)}>
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-        </div>
-        {searchResults.length > 0 && (
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Search Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                {searchResults.map((result, index) => (
-                  <li key={index}>{result.type}: {result.name}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
+      
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <Card className="lg:col-span-1">
           <CardHeader>
@@ -181,7 +138,7 @@ export default function Dashboard() {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center text-2xl">
-            <Brain className="h-8 w-8 mr-2 text-primary" />
+            <Bot className="h-8 w-8 mr-2 text-primary" />
             AI Insights Dashboard
           </CardTitle>
           <CardDescription>
