@@ -1,24 +1,19 @@
-// Load environment variables
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const OpenAI = require('openai');
 
-// Initialize Express app
 const app = express();
 const port = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// OpenAI Configuration
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Endpoint to fetch AI insights
 app.post('/ai_insights', async (req, res) => {
     const { machines, salesData } = req.body;
   
@@ -51,7 +46,6 @@ app.post('/ai_insights', async (req, res) => {
     }
 });
 
-// Start the server
 app.listen(port, () => {
     console.log(`AI backend listening at http://localhost:${port}`);
 });

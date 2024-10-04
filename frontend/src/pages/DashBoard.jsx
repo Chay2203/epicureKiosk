@@ -9,12 +9,12 @@ import { DispenserManagement } from '../components/DispenserManagement'
 import { mockMachines, mockRecipes, mockSalesData } from '../mockData'
 import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot, CheckCircle2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 
 const API_URL = 'https://epicurekiosk.onrender.com'
 
@@ -67,29 +67,42 @@ export default function Dashboard() {
 
   return (
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <header className="flex justify-between items-center mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+      <header className="flex justify-between items-center mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold">Kiosk Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold dark:text-white">Kiosk Admin Dashboard</h1>
         </div>
         <div className="flex items-center space-x-2">
-          <Sun className="h-6 w-6" />
-          <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
-          <Moon className="h-6 w-6" />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleDarkMode}
+            className={`w-[80px] h-[40px] rounded-full transition-colors duration-200 ${
+              darkMode ? 'bg-gray-700' : 'bg-gray-200'
+            }`}
+          >
+            <Sun className={`h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 ${
+              darkMode ? 'text-white' : 'text-yellow-500'
+            }`} />
+            <Moon className={`absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 ${
+              darkMode ? 'text-white' : 'text-gray-400'
+            }`} />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         </div>
       </header>
 
       {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="mb-6 dark:bg-red-900 dark:border-red-800">
+          <AlertTriangle className="h-4 w-4 dark:text-red-100" />
+          <AlertTitle className="dark:text-red-100">Error</AlertTitle>
+          <AlertDescription className="dark:text-red-100">{error}</AlertDescription>
         </Alert>
       )}
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1 dark:bg-gray-800 dark:text-white">
           <CardHeader>
-            <CardTitle>Machines</CardTitle>
+            <CardTitle className="dark:text-white">Machines</CardTitle>
           </CardHeader>
           <CardContent>
             <MachineList
@@ -100,17 +113,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-3 dark:bg-gray-800 dark:text-white">
           <CardHeader>
-            <CardTitle>{selectedMachine ? selectedMachine.name : 'Machine Details'}</CardTitle>
+            <CardTitle className="dark:text-white">{selectedMachine ? selectedMachine.name : 'Machine Details'}</CardTitle>
           </CardHeader>
           <CardContent>
             {selectedMachine ? (
               <Tabs defaultValue="details" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="dispensers">Dispensers</TabsTrigger>
-                  <TabsTrigger value="recipes">Recipes</TabsTrigger>
+                <TabsList className="dark:bg-gray-700">
+                  <TabsTrigger value="details" className="dark:text-white dark:data-[state=active]:bg-gray-600">Details</TabsTrigger>
+                  <TabsTrigger value="dispensers" className="dark:text-white dark:data-[state=active]:bg-gray-600">Dispensers</TabsTrigger>
+                  <TabsTrigger value="recipes" className="dark:text-white dark:data-[state=active]:bg-gray-600">Recipes</TabsTrigger>
                 </TabsList>
                 <TabsContent value="details">
                   <MachineDetails
@@ -139,9 +152,9 @@ export default function Dashboard() {
                 </TabsContent>
               </Tabs>
             ) : (
-              <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <Coffee className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-lg">Select a machine to view details</p>
+              <div className="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <Coffee className="h-12 w-12 mx-auto mb-4 text-gray-400 dark:text-gray-300" />
+                <p className="text-lg dark:text-white">Select a machine to view details</p>
               </div>
             )}
           </CardContent>
@@ -149,13 +162,13 @@ export default function Dashboard() {
       </div>
 
       {/* AI Insights Section */}
-      <Card className="mt-6">
+      <Card className="mt-6 dark:bg-gray-800 dark:text-white">
         <CardHeader>
-          <CardTitle className="flex items-center text-2xl">
-            <Bot className="h-8 w-8 mr-2 text-primary" />
+          <CardTitle className="flex items-center text-2xl dark:text-white">
+            <Bot className="h-8 w-8 mr-2 text-primary dark:text-white" />
             AI Insights Dashboard
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dark:text-gray-300">
             Real-time analysis and recommendations for your kiosk operations
           </CardDescription>
         </CardHeader>
@@ -164,32 +177,32 @@ export default function Dashboard() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[1, 2, 3].map((index) => (
-                  <Card key={index}>
+                  <Card key={index} className="dark:bg-gray-700">
                     <CardHeader>
-                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-6 w-3/4 dark:bg-gray-600" />
                     </CardHeader>
                     <CardContent>
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-full mb-2 dark:bg-gray-600" />
+                      <Skeleton className="h-4 w-5/6 dark:bg-gray-600" />
                     </CardContent>
                   </Card>
                 ))}
               </div>
 
-              <Separator />
+              <Separator className="dark:bg-gray-600" />
 
               <div>
-                <Skeleton className="h-6 w-1/4 mb-2" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-6 w-1/4 mb-2 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-full mb-2 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-full mb-2 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-3/4 dark:bg-gray-600" />
               </div>
 
               <div>
-                <Skeleton className="h-6 w-1/3 mb-2" />
+                <Skeleton className="h-6 w-1/3 mb-2 dark:bg-gray-600" />
                 <div className="space-y-2">
                   {[1, 2, 3].map((index) => (
-                    <Skeleton key={index} className="h-8 w-full" />
+                    <Skeleton key={index} className="h-8 w-full dark:bg-gray-600" />
                   ))}
                 </div>
               </div>
@@ -197,50 +210,50 @@ export default function Dashboard() {
           ) : aiInsights ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
+                <Card className="dark:bg-gray-700 dark:text-white">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center">
+                    <CardTitle className="text-lg flex items-center dark:text-white">
                       <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
                       Sales Trends
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{aiInsights.salesTrend || 'No sales trend data available.'}</p>
+                    <p className="text-sm dark:text-gray-300">{aiInsights.salesTrend || 'No sales trend data available.'}</p>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="dark:bg-gray-700 dark:text-white">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center">
+                    <CardTitle className="text-lg flex items-center dark:text-white">
                     <Hammer className="h-5 w-5 mr-2 text-red-500" />
                       Maintenance Insights
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{aiInsights.maintenanceInsight || 'No maintenance insights available.'}</p>
+                    <p className="text-sm dark:text-gray-300">{aiInsights.maintenanceInsight || 'No maintenance insights available.'}</p>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="dark:bg-gray-700 dark:text-white">
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center">
+                    <CardTitle className="text-lg flex items-center dark:text-white">
                       <Package className="h-5 w-5 mr-2 text-blue-500" />
                       Inventory Recommendations
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{aiInsights.inventoryRecommendation || 'No inventory recommendations available.'}</p>
+                    <p className="text-sm dark:text-gray-300">{aiInsights.inventoryRecommendation || 'No inventory recommendations available.'}</p>
                   </CardContent>
                 </Card>
               </div>
 
-              <Separator />
+              <Separator className="dark:bg-gray-600" />
 
               <div>
-                <h3 className="text-xl font-semibold mb-2">Detailed Analysis</h3>
-                <p className="text-sm whitespace-pre-line">{aiInsights.detailedAnalysis || 'No detailed analysis available.'}</p>
+                <h3 className="text-xl font-semibold mb-2 dark:text-white">Detailed Analysis</h3>
+                <p className="text-sm whitespace-pre-line dark:text-gray-300">{aiInsights.detailedAnalysis || 'No detailed analysis available.'}</p>
               </div>
 
               {aiInsights.anomalyDetected && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="dark:bg-red-900 dark:border-red-800 dark:text-red-100">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertTitle>Anomaly Detected</AlertTitle>
                   <AlertDescription>{aiInsights.anomalyDescription}</AlertDescription>
@@ -249,7 +262,7 @@ export default function Dashboard() {
 
               {aiInsights.actionItems && aiInsights.actionItems.length > 0 && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Recommended Actions</h3>
+                  <h3 className="text-xl font-semibold mb-2 dark:text-white">Recommended Actions</h3>
                   <div className="space-y-2">
                     {aiInsights.actionItems.map((item, index) => (
                       <div key={index} className="flex items-center space-x-2">
@@ -257,10 +270,11 @@ export default function Dashboard() {
                           id={`action-${index}`}
                           checked={completedActions.includes(index)}
                           onCheckedChange={() => toggleActionCompletion(index)}
+                          className="dark:border-gray-400"
                         />
                         <label
                           htmlFor={`action-${index}`}
-                          className={`text-sm ${completedActions.includes(index) ? 'line-through text-gray-500' : ''}`}
+                          className={`text-sm ${completedActions.includes(index) ? 'line-through text-gray-500 dark:text-gray-400' : 'dark:text-white'}`}
                         >
                           {item}
                         </label>
@@ -272,7 +286,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-40">
-              <p className="text-lg text-gray-500">No AI insights available. Please try again later.</p>
+              <p className="text-lg text-gray-500 dark:text-gray-400">No AI insights available. Please try again later.</p>
             </div>
           )}
         </CardContent>
