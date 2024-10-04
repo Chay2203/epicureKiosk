@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { MachineList } from '../components/MachineList'
@@ -27,9 +25,11 @@ export default function Dashboard() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [completedActions, setCompletedActions] = useState([])
+  const [hasFetchedInsights, setHasFetchedInsights] = useState(false) 
 
   useEffect(() => {
     const fetchAiInsights = async () => {
+      if (hasFetchedInsights) return 
       setLoading(true)
       try {
         const response = await axios.post(`${API_URL}/ai_insights`, {
@@ -40,6 +40,7 @@ export default function Dashboard() {
         console.log('Function called')
         console.log('AI Insights:', response.data.insights)
         setError(null)
+        setHasFetchedInsights(true) 
       } catch (error) {
         console.error('Error fetching AI insights:', error)
         setError('Failed to fetch AI insights. Please try again later.')
@@ -48,8 +49,10 @@ export default function Dashboard() {
       }
     }
 
-    fetchAiInsights()
-  }, [machines])
+    if (!hasFetchedInsights) {
+      fetchAiInsights()
+    }
+  }, [machines, hasFetchedInsights]) // Remove 'machines' here if the insights don't depend on machines change
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
@@ -60,8 +63,8 @@ export default function Dashboard() {
   const toggleActionCompletion = (index) => {
     setCompletedActions(prev => 
       prev.includes(index) 
-        ? prev.filter(i => i !== index) 
-        : [...prev, index]
+      ? prev.filter(i => i !== index) 
+      : [...prev, index]
     )
   }
 
