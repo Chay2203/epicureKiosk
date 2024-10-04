@@ -25,7 +25,6 @@
 
 <details><summary>Table of Contents</summary>
 
-- [ Overview](#-overview)
 - [ Features](#-features)
 - [ Repository Structure](#-repository-structure)
 - [ Modules](#-modules)
@@ -33,11 +32,6 @@
     - [ Prerequisites](#-prerequisites)
     - [ Installation](#-installation)
     - [ Usage](#-usage)
-    - [ Tests](#-tests)
-- [ Project Roadmap](#-project-roadmap)
-- [ Contributing](#-contributing)
-- [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
 
 </details>
 <hr>
