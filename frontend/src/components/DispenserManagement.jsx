@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -23,44 +25,61 @@ import { Pencil, Trash2 } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
 export function DispenserManagement({ machine, onUpdate }) {
+  const [localMachine, setLocalMachine] = useState(machine)
   const [editingDispenser, setEditingDispenser] = useState(null)
-  const [newIngredient, setNewIngredient] = useState({ name: '', quantity: 0 })
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [newIngredient, setNewIngredient] = useState({ name: '', quantity: '' })
+
+  useEffect(() => {
+    const storedMachine = localStorage.getItem(`machine_${machine.id}`)
+    if (storedMachine) {
+      setLocalMachine(JSON.parse(storedMachine))
+    } else {
+      setLocalMachine(machine)
+    }
+  }, [machine])
+
+  useEffect(() => {
+    localStorage.setItem(`machine_${localMachine.id}`, JSON.stringify(localMachine))
+    onUpdate(localMachine)
+  }, [localMachine, onUpdate])
 
   const handleEdit = (dispenser) => {
-    setEditingDispenser({ ...dispenser })
+    setEditingDispenser({ ...dispenser, quantity: dispenser.quantity.toString() })
+    setIsEditDialogOpen(true)
   }
 
   const handleSave = () => {
-    const updatedMachine = {
-      ...machine,
-      dispensers: machine.dispensers.map(d => 
-        d.id === editingDispenser.id ? editingDispenser : d
-      )
+    if (editingDispenser) {
+      setLocalMachine(prevMachine => ({
+        ...prevMachine,
+        dispensers: prevMachine.dispensers.map(d => 
+          d.id === editingDispenser.id ? {...editingDispenser, quantity: parseInt(editingDispenser.quantity) || 0} : d
+        )
+      }))
+      setIsEditDialogOpen(false)
+      setEditingDispenser(null)
     }
-    onUpdate(updatedMachine)
-    setEditingDispenser(null)
   }
 
   const handleAdd = () => {
-    if (newIngredient.name && newIngredient.quantity > 0) {
-      const updatedMachine = {
-        ...machine,
+    if (newIngredient.name && newIngredient.quantity !== '') {
+      setLocalMachine(prevMachine => ({
+        ...prevMachine,
         dispensers: [
-          ...machine.dispensers,
-          { id: Date.now(), ...newIngredient }
+          ...prevMachine.dispensers,
+          { id: Date.now(), ...newIngredient, quantity: parseInt(newIngredient.quantity) || 0 }
         ]
-      }
-      onUpdate(updatedMachine)
-      setNewIngredient({ name: '', quantity: 0 })
+      }))
+      setNewIngredient({ name: '', quantity: '' })
     }
   }
 
   const handleDelete = (id) => {
-    const updatedMachine = {
-      ...machine,
-      dispensers: machine.dispensers.filter(d => d.id !== id)
-    }
-    onUpdate(updatedMachine)
+    setLocalMachine(prevMachine => ({
+      ...prevMachine,
+      dispensers: prevMachine.dispensers.filter(d => d.id !== id)
+    }))
   }
 
   return (
@@ -79,54 +98,15 @@ export function DispenserManagement({ machine, onUpdate }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {machine.dispensers.map((dispenser) => (
+              {localMachine.dispensers.map((dispenser) => (
                 <TableRow key={dispenser.id}>
                   <TableCell className="font-medium">{dispenser.name}</TableCell>
                   <TableCell>{dispenser.quantity}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="icon" onClick={() => handleEdit(dispenser)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Dispenser</DialogTitle>
-                          </DialogHeader>
-                          {editingDispenser && (
-                            <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                  Name
-                                </Label>
-                                <Input
-                                  id="name"
-                                  value={editingDispenser.name}
-                                  onChange={(e) => setEditingDispenser({ ...editingDispenser, name: e.target.value })}
-                                  className="col-span-3"
-                                />
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="quantity" className="text-right">
-                                  Quantity
-                                </Label>
-                                <Input
-                                  id="quantity"
-                                  type="number"
-                                  value={editingDispenser.quantity}
-                                  onChange={(e) => setEditingDispenser({ ...editingDispenser, quantity: parseInt(e.target.value) })}
-                                  className="col-span-3"
-                                />
-                              </div>
-                            </div>
-                          )}
-                          <DialogFooter>
-                            <Button onClick={handleSave}>Save changes</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <Button variant="outline" size="icon" onClick={() => handleEdit(dispenser)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="icon">
@@ -156,6 +136,44 @@ export function DispenserManagement({ machine, onUpdate }) {
           </Table>
         </div>
 
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Dispenser</DialogTitle>
+            </DialogHeader>
+            {editingDispenser && (
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={editingDispenser.name}
+                    onChange={(e) => setEditingDispenser({ ...editingDispenser, name: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="quantity" className="text-right">
+                    Quantity
+                  </Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    value={editingDispenser.quantity}
+                    onChange={(e) => setEditingDispenser({ ...editingDispenser, quantity: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button onClick={handleSave}>Save changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <div className="mt-6">
           <h4 className="text-sm font-medium mb-2">Add New Ingredient</h4>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
@@ -169,7 +187,7 @@ export function DispenserManagement({ machine, onUpdate }) {
             <Input
               type="number"
               value={newIngredient.quantity}
-              onChange={(e) => setNewIngredient({ ...newIngredient, quantity: parseInt(e.target.value) })}
+              onChange={(e) => setNewIngredient({ ...newIngredient, quantity: e.target.value })}
               placeholder="Quantity"
               className="w-full sm:w-auto"
             />

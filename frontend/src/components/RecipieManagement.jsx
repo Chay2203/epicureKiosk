@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -18,32 +20,53 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { PlusCircle, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, PlusCircle } from 'lucide-react'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
-export function RecipeManagement({ machine, recipes, onUpdate }) {
+export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate }) {
+  const [recipes, setRecipes] = useState(initialRecipes)
   const [editingRecipe, setEditingRecipe] = useState(null)
   const [newRecipe, setNewRecipe] = useState({ name: '', ingredients: [] })
   const [isAddingRecipe, setIsAddingRecipe] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  useEffect(() => {
+    const storedRecipes = localStorage.getItem(`recipes_${machine.id}`)
+    if (storedRecipes) {
+      setRecipes(JSON.parse(storedRecipes))
+    } else {
+      setRecipes(initialRecipes)
+    }
+  }, [machine.id, initialRecipes])
+
+  useEffect(() => {
+    localStorage.setItem(`recipes_${machine.id}`, JSON.stringify(recipes))
+    onUpdate(recipes)
+  }, [recipes, machine.id, onUpdate])
 
   const handleEdit = (recipe) => {
     setEditingRecipe({ ...recipe })
+    setIsEditDialogOpen(true)
   }
 
   const handleSave = () => {
-    const updatedRecipes = recipes.map((r) =>
-      r.id === editingRecipe.id ? editingRecipe : r
-    )
-    onUpdate(updatedRecipes)
-    setEditingRecipe(null)
+    if (editingRecipe) {
+      setRecipes(prevRecipes => 
+        prevRecipes.map(r => r.id === editingRecipe.id ? editingRecipe : r)
+      )
+      setIsEditDialogOpen(false)
+      setEditingRecipe(null)
+    }
   }
 
   const handleAdd = () => {
     if (newRecipe.name && newRecipe.ingredients.length > 0) {
-      const updatedRecipes = [
-        ...recipes,
-        { id: Date.now(), machineId: machine.id, ...newRecipe },
-      ]
-      onUpdate(updatedRecipes)
+      const newRecipeWithId = {
+        id: Date.now(),
+        machineId: machine.id,
+        ...newRecipe,
+      }
+      setRecipes(prevRecipes => [...prevRecipes, newRecipeWithId])
       setNewRecipe({ name: '', ingredients: [] })
       setIsAddingRecipe(false)
     } else {
@@ -52,20 +75,23 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
   }
 
   const handleDelete = (id) => {
-    const updatedRecipes = recipes.filter((r) => r.id !== id)
-    onUpdate(updatedRecipes)
+    setRecipes(prevRecipes => prevRecipes.filter(r => r.id !== id))
   }
 
   const handleIngredientChange = (index, field, value) => {
-    const updatedIngredients = [...editingRecipe.ingredients]
-    updatedIngredients[index][field] = value
-    setEditingRecipe({ ...editingRecipe, ingredients: updatedIngredients })
+    setEditingRecipe(prevRecipe => {
+      const updatedIngredients = [...prevRecipe.ingredients]
+      updatedIngredients[index] = { ...updatedIngredients[index], [field]: value }
+      return { ...prevRecipe, ingredients: updatedIngredients }
+    })
   }
 
   const handleNewIngredientChange = (index, field, value) => {
-    const updatedIngredients = [...newRecipe.ingredients]
-    updatedIngredients[index][field] = value
-    setNewRecipe({ ...newRecipe, ingredients: updatedIngredients })
+    setNewRecipe(prevRecipe => {
+      const updatedIngredients = [...prevRecipe.ingredients]
+      updatedIngredients[index] = { ...updatedIngredients[index], [field]: value }
+      return { ...prevRecipe, ingredients: updatedIngredients }
+    })
   }
 
   return (
@@ -86,12 +112,32 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
               <TableRow key={recipe.id}>
                 <TableCell>{recipe.name}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEdit(recipe)}>
-                    Edit
-                  </Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(recipe.id)}>
-                    Delete
-                  </Button>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" size="icon" onClick={() => handleEdit(recipe)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the recipe.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(recipe.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -99,10 +145,11 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
         </Table>
 
         <Button className="mt-4" onClick={() => setIsAddingRecipe(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
           Add New Recipe
         </Button>
 
-        <Dialog open={!!editingRecipe} onOpenChange={() => setEditingRecipe(null)}>
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Recipe</DialogTitle>
@@ -131,15 +178,17 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
                     <Input
                       type="number"
                       value={ingredient.quantity}
-                      onChange={(e) => handleIngredientChange(index, 'quantity', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
                       placeholder="Quantity"
                     />
                     <Button
                       variant="destructive"
                       size="icon"
                       onClick={() => {
-                        const updatedIngredients = editingRecipe.ingredients.filter((_, i) => i !== index)
-                        setEditingRecipe({ ...editingRecipe, ingredients: updatedIngredients })
+                        setEditingRecipe(prevRecipe => ({
+                          ...prevRecipe,
+                          ingredients: prevRecipe.ingredients.filter((_, i) => i !== index)
+                        }))
                       }}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -148,10 +197,10 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
                 ))}
                 <Button
                   variant="outline"
-                  onClick={() => setEditingRecipe({
-                    ...editingRecipe,
-                    ingredients: [...editingRecipe.ingredients, { name: '', quantity: 0 }]
-                  })}
+                  onClick={() => setEditingRecipe(prevRecipe => ({
+                    ...prevRecipe,
+                    ingredients: [...prevRecipe.ingredients, { name: '', quantity: '' }]
+                  }))}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Ingredient
@@ -192,15 +241,17 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
                   <Input
                     type="number"
                     value={ingredient.quantity}
-                    onChange={(e) => handleNewIngredientChange(index, 'quantity', parseInt(e.target.value) || 0)}
+                    onChange={(e) => handleNewIngredientChange(index, 'quantity', e.target.value)}
                     placeholder="Quantity"
                   />
                   <Button
                     variant="destructive"
                     size="icon"
                     onClick={() => {
-                      const updatedIngredients = newRecipe.ingredients.filter((_, i) => i !== index)
-                      setNewRecipe({ ...newRecipe, ingredients: updatedIngredients })
+                      setNewRecipe(prevRecipe => ({
+                        ...prevRecipe,
+                        ingredients: prevRecipe.ingredients.filter((_, i) => i !== index)
+                      }))
                     }}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -209,10 +260,10 @@ export function RecipeManagement({ machine, recipes, onUpdate }) {
               ))}
               <Button
                 variant="outline"
-                onClick={() => setNewRecipe({
-                  ...newRecipe,
-                  ingredients: [...newRecipe.ingredients, { name: '', quantity: 0 }]
-                })}
+                onClick={() => setNewRecipe(prevRecipe => ({
+                  ...prevRecipe,
+                  ingredients: [...prevRecipe.ingredients, { name: '', quantity: '' }]
+                }))}
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Ingredient

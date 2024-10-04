@@ -37,6 +37,8 @@ export default function Dashboard() {
           salesData: mockSalesData,
         })
         setAiInsights(response.data.insights)
+        console.log('Function called')
+        console.log('AI Insights:', response.data.insights)
         setError(null)
       } catch (error) {
         console.error('Error fetching AI insights:', error)
@@ -67,7 +69,7 @@ export default function Dashboard() {
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <header className="flex justify-between items-center mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold">Kiosk Admin Dashboard</h1>
         </div>
         <div className="flex items-center space-x-2">
           <Sun className="h-6 w-6" />
