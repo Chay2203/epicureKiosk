@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchAiInsights = async () => {
-      if (hasFetchedInsights) return 
+      if (hasFetchedInsights) return; // Ensure only one API call
       setLoading(true)
       try {
         const response = await axios.post(`${API_URL}/ai_insights`, {
@@ -37,22 +37,20 @@ export default function Dashboard() {
           salesData: mockSalesData,
         })
         setAiInsights(response.data.insights)
-        console.log('Function called')
         console.log('AI Insights:', response.data.insights)
         setError(null)
         setHasFetchedInsights(true) 
       } catch (error) {
         console.error('Error fetching AI insights:', error)
-        setError('Failed to fetch AI insights. Please try again later.')
+        setError('Failed to fetch AI insights. Please refresh the page to try again.')
       } finally {
         setLoading(false)
       }
     }
 
-    if (!hasFetchedInsights) {
-      fetchAiInsights()
-    }
-  }, [machines, hasFetchedInsights]) // Remove 'machines' here if the insights don't depend on machines change
+    fetchAiInsights() // Call the function once
+
+  }, [hasFetchedInsights])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
@@ -67,6 +65,7 @@ export default function Dashboard() {
       : [...prev, index]
     )
   }
+
 
   return (
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
@@ -164,7 +163,6 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* AI Insights Section */}
       <Card className="mt-6 dark:bg-gray-800 dark:text-white">
         <CardHeader>
           <CardTitle className="flex items-center text-2xl dark:text-white">

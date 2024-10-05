@@ -95,25 +95,25 @@ export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate })
   }
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 dark:bg-gray-800 dark:text-white">
       <CardHeader>
-        <CardTitle>Recipe Management</CardTitle>
+        <CardTitle className="dark:text-white">Recipe Management</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Recipe Name</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+            <TableRow className="dark:border-gray-700">
+              <TableHead className="dark:text-gray-300">Recipe Name</TableHead>
+              <TableHead className="text-right dark:text-gray-300">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {recipes.map((recipe) => (
-              <TableRow key={recipe.id}>
-                <TableCell>{recipe.name}</TableCell>
+              <TableRow key={recipe.id} className="dark:border-gray-700">
+                <TableCell className="dark:text-white">{recipe.name}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
-                    <Button variant="outline" size="icon" onClick={() => handleEdit(recipe)}>
+                    <Button variant="outline" size="icon" onClick={() => handleEdit(recipe)} className="dark:border-gray-600 dark:text-gray-300">
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <AlertDialog>
@@ -122,16 +122,16 @@ export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate })
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
+                      <AlertDialogContent className="dark:bg-gray-800 dark:text-white">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
+                          <AlertDialogTitle className="dark:text-white">Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription className="dark:text-gray-300">
                             This action cannot be undone. This will permanently delete the recipe.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(recipe.id)}>
+                          <AlertDialogCancel className="dark:bg-gray-700 dark:text-white">Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(recipe.id)} className="dark:bg-red-600 dark:text-white">
                             Delete
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -143,7 +143,7 @@ export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate })
             ))}
           </TableBody>
         </Table>
-
+        
         <Button className="mt-4" onClick={() => setIsAddingRecipe(true)}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New Recipe
