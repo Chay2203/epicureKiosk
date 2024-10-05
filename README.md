@@ -203,5 +203,5 @@ const openai = new OpenAI({
 cd backend
 ```
 ```sh
-node app.js
+node index.js
 ```
