@@ -23,12 +23,13 @@ import { Label } from "@/components/ui/label"
 import { Pencil, Trash2, PlusCircle } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
-export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate }) {
+export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate}) {
   const [recipes, setRecipes] = useState(initialRecipes)
   const [editingRecipe, setEditingRecipe] = useState(null)
   const [newRecipe, setNewRecipe] = useState({ name: '', ingredients: [] })
   const [isAddingRecipe, setIsAddingRecipe] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
 
   useEffect(() => {
     const storedRecipes = localStorage.getItem(`recipes_${machine.id}`)
@@ -41,7 +42,6 @@ export function RecipeManagement({ machine, recipes: initialRecipes, onUpdate })
 
   useEffect(() => {
     localStorage.setItem(`recipes_${machine.id}`, JSON.stringify(recipes))
-    onUpdate(recipes)
   }, [recipes, machine.id, onUpdate])
 
   const handleEdit = (recipe) => {

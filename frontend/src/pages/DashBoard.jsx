@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { useRef } from 'react';
 
 const API_URL = 'https://epicurekiosk.onrender.com'
 
@@ -26,6 +27,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [completedActions, setCompletedActions] = useState([])
   const [hasFetchedInsights, setHasFetchedInsights] = useState(false) 
+  const [message, setMessage] = useState('');
+  const [receivedMessage, setReceivedMessage] = useState('');
 
   useEffect(() => {
     const fetchAiInsights = async () => {
@@ -66,6 +69,26 @@ export default function Dashboard() {
     )
   }
 
+  const sendMessageToFlutter = () => {
+    if (window.BluetoothChannel) {
+      window.BluetoothChannel.postMessage(message);
+    } else {
+      console.error('BluetoothChannel is not available.');
+    }
+  };
+
+  useEffect(() => {
+    const handleReceivedMessage = (event) => {
+      console.log('Received message from Flutter:', event.detail); 
+      setReceivedMessage(event.detail); 
+    };
+
+    document.addEventListener('bluetoothMessageReceived', handleReceivedMessage);
+
+    return () => {
+      document.removeEventListener('bluetoothMessageReceived', handleReceivedMessage);
+    };
+  }, []);
 
   return (
     <div className={`min-h-screen p-4 transition-colors duration-200 ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
@@ -292,6 +315,24 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+      <div style={{ padding: '20px' }}>
+        <h1>Bluetooth Message Sender</h1>
+        <div>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Enter message to send"
+          />
+          <button onClick={sendMessageToFlutter}>Send Message</button>
+        </div>
+        {receivedMessage && (
+          <div style={{ marginTop: '20px' }}>
+            <h2>Received Message:</h2>
+            <p>{receivedMessage}</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
