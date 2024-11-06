@@ -56,6 +56,7 @@ function Product() {
                   </p>
                   <div className="flex items-center justify-between">
                     <p className="text-lg font-bold dark:text-white">₹{product.price}</p>
+                    <div>
                     <input
                       type="text"
                       value={message}
@@ -70,6 +71,7 @@ function Product() {
                       <ShoppingCart className="h-4 w-4" />
                       Order Now
                     </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

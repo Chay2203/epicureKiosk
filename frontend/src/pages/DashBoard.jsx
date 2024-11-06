@@ -13,7 +13,6 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { useRef } from 'react';
 import Product from '../components/ProductSection';
 
 const API_URL = 'https://epicurekiosk.onrender.com'
