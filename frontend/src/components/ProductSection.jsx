@@ -33,6 +33,20 @@ const sendMessageToFlutter = () => {
   }
 };
 
+useEffect(() => {
+  const handleReceivedMessage = (event) => {
+    console.log('Received message from Flutter:', event.detail); // Log received message
+    setReceivedMessage(event.detail); // Set the received message to display it
+  };
+
+  document.addEventListener('bluetoothMessageReceived', handleReceivedMessage);
+
+  return () => {
+    document.removeEventListener('bluetoothMessageReceived', handleReceivedMessage);
+  };
+}, []);
+
+
 
 function Product() {
   const [message, setMessage] = useState('');
