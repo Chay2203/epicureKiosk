@@ -5,7 +5,7 @@ import { MachineDetails } from '../components/MachineDetails'
 import { RecipeManagement } from '../components/RecipieManagement'
 import { DispenserManagement } from '../components/DispenserManagement'
 import { mockMachines, mockRecipes, mockSalesData } from '../mockData'
-import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot, CheckCircle2 } from 'lucide-react'
+import { Sun, Moon, Coffee, AlertTriangle, TrendingUp, Hammer, Package, Bot, CheckCircle2, ShoppingCart } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { useRef } from 'react';
+import Product from '../components/ProductSection';
 
 const API_URL = 'https://epicurekiosk.onrender.com'
 
@@ -32,7 +33,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchAiInsights = async () => {
-      if (hasFetchedInsights) return; // Ensure only one API call
+      if (hasFetchedInsights) return; 
       setLoading(true)
       try {
         const response = await axios.post(`${API_URL}/ai_insights`, {
@@ -50,8 +51,7 @@ export default function Dashboard() {
         setLoading(false)
       }
     }
-
-    fetchAiInsights() // Call the function once
+    fetchAiInsights() 
 
   }, [hasFetchedInsights])
 
@@ -333,6 +333,17 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      <Card className="mt-6 dark:bg-gray-800 dark:text-white">
+        <CardHeader>
+          <CardTitle className="flex items-center text-2xl dark:text-white">
+            <ShoppingCart className="h-6 w-6 mr-2" />
+            Available Products
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Product />
+        </CardContent>
+      </Card>
     </div>
   )
 }
